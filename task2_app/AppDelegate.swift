@@ -7,13 +7,24 @@
 
 import UIKit
 import CoreData
+import UserNotifications
+import AVFoundation
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var audioPlayer: AVAudioPlayer?
+        var volume: Float = 0.1
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        do {
+                    try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+                    try AVAudioSession.sharedInstance().setActive(true)
+                } catch {
+                    print("Setting category to AVAudioSessionCategoryPlayback failed.")
+                }
+        
         // Override point for customization after application launch.
         return true
     }
@@ -77,5 +88,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+            
+            playAlarmSound()
+            
+            // Show an alert to stop music
+            let alert = UIAlertController(title: "Alarm", message: "Stop Music?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Stop", style: .default, handler: { _ in
+                self.audioPlayer?.stop()
+            }))
+            
+            // Show the alert
+            if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                rootVC.present(alert, animated: true, completion: nil)
+            }
+            
+            completionHandler()
+        }
+    
+    func playAlarmSound() {
+            guard let url = Bundle.main.url(forResource: "yourAlarmSound", withExtension: "mp3") else { return }
+            
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.volume = volume
+                audioPlayer?.play()
+                
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                    self.volume += 0.05
+                    self.audioPlayer?.volume = self.volume
+                    
+                    if self.volume >= 1.0 {
+                        timer.invalidate()
+                    }
+                }
+            } catch {
+                print("Audio could not be played.")
+            }
+        }
 }
 
