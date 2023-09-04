@@ -14,26 +14,23 @@ import AVFoundation
 
 class ViewController: UIViewController, UNUserNotificationCenterDelegate {
 
+    @IBOutlet weak var timePicker: UIDatePicker!
     var audioPlayer: AVAudioPlayer?
     var volume: Float = 0.1
-    var timePicker: UIDatePicker!
 
-       
+    @IBOutlet weak var setAlarmButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        // Create time picker
-                timePicker = UIDatePicker()
-                timePicker.preferredDatePickerStyle = .inline
-                timePicker.datePickerMode = .time
-                timePicker.frame = CGRect(x: 0, y: 50, width: self.view.frame.width, height: 200)
-                self.view.addSubview(timePicker)
+        timePicker.transform = CGAffineTransform(scaleX: 2, y: 2)
 
-                // Create Set Alarm button
-                let setAlarmButton = UIButton(frame: CGRect(x: 0, y: 260, width: self.view.frame.width, height: 50))
+              
                 setAlarmButton.setTitle("Set Alarm", for: .normal)
                 setAlarmButton.backgroundColor = .blue
+        setAlarmButton.titleLabel?.textColor = .white
+                setAlarmButton.layer.cornerRadius = 25
                 setAlarmButton.addTarget(self, action: #selector(setAlarm(_:)), for: .touchUpInside)
                 self.view.addSubview(setAlarmButton)
             }
