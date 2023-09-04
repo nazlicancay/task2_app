@@ -43,25 +43,18 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
                 scheduleNotification(at: selectedTime)
                 print("Alarm set")
             }
+    
     func scheduleNotification(at date: Date) {
         let calendar = Calendar.current
-        
-        // Break the date into components
         let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-        
-        // Create the trigger
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        
-        // Create the content
+
         let content = UNMutableNotificationContent()
         content.title = "Wake up!"
         content.body = "Time to wake up!"
-        content.sound = UNNotificationSound.default
-        
-        // Create the request
+        content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "AlarmSound.mp3"))
+
         let request = UNNotificationRequest(identifier: "AlarmNotification", content: content, trigger: trigger)
-        
-        // Schedule the request
         UNUserNotificationCenter.current().add(request) { (error) in
             if let error = error {
                 print("Error scheduling notification: \(error)")
@@ -112,20 +105,6 @@ class ViewController: UIViewController, UNUserNotificationCenterDelegate {
             }
         }
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UNUserNotificationCenter.current().delegate = self
-        
-        // Request permission to display alerts and play sounds.
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
-        { (granted, error) in
-            if granted {
-                print("Notification permissions granted.")
-            } else {
-                print("Notification permissions denied because: \(String(describing: error?.localizedDescription)).")
-            }
-        }
-        return true
-    }
 
 
 

@@ -11,23 +11,27 @@ import UserNotifications
 import AVFoundation
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var audioPlayer: AVAudioPlayer?
         var volume: Float = 0.1
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        do {
-                    try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
-                    try AVAudioSession.sharedInstance().setActive(true)
-                } catch {
-                    print("Setting category to AVAudioSessionCategoryPlayback failed.")
-                }
+        UNUserNotificationCenter.current().delegate = self
         
-        // Override point for customization after application launch.
+        // Request permission to display alerts and play sounds.
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+        { (granted, error) in
+            if granted {
+                print("Notification permissions granted.")
+            } else {
+                print("Notification permissions denied because: \(String(describing: error?.localizedDescription)).")
+            }
+        }
         return true
     }
+
 
     // MARK: UISceneSession Lifecycle
 
